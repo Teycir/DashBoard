@@ -13,7 +13,7 @@ import pickle
 from my_functions.functions_cached import * # personnal functions pkg and module
 #######################################################################################
 # To run this code, type in terminal at the file path: 
-# streamlit run app3.py
+# streamlit run app.py
 #######################################################################################
 # Stating graphical parameters
 COLOR_BR_r = ['#00CC96', '#EF553B'] #['dodgerblue', 'indianred']
@@ -26,9 +26,11 @@ FILENAME_TRAIN = PATH_INPUT+'application_train_sample.csv' # sample of train set
 FILENAME_TEST = PATH_INPUT+'application_test.csv'
 FILENAME_MODEL = PATH+'optimized_model.sav'
 
+
+
 #######################################################################################
 # Setting layout & navigation pane
-st.set_page_config(page_title="Dashboard", # Must be 1st st statement
+st.set_page_config(page_title="Dashboard Pret a depenser", # Must be 1st st statement
                    page_icon="☮",
                    initial_sidebar_state="expanded")
 
@@ -36,9 +38,8 @@ df_train = get_data(FILENAME_TRAIN) # load trainset data in a df
 df_test = get_data(FILENAME_TEST) # load testset (unlabeled) data in a df
 
 sb = st.sidebar # add a side bar 
-sb.image('https://streamlit.io/images/brand/streamlit-logo-secondary-colormark-darktext.png', width=300)
-sb.image('https://pixabay.com/fr/images/download/brain-6215574_640.jpg', width=300)
-sb.markdown('**Who are you?**')
+sb.image('https://user.oc-static.com/upload/2019/02/25/15510866018677_logo%20projet%20fintech.png', width=280)
+sb.markdown('**User type**')
 rad_who = sb.radio('', ['👨‍⚕️ Data Scientist', '🤵 Bank Clerk']) # two versions of the app
 # the two versions of the app will have different options, home is common to all
 if rad_who == '👨‍⚕️ Data Scientist':
@@ -85,7 +86,7 @@ if rad == '🏠 Home': # with this we choose which container to display on the s
         t.image('https://upload.wikimedia.org/wikipedia/commons/3/37/Plotly-logo-01-square.png', width=170)
 
         st.title("Welcome to the Dashboard! \n ----")
-        st.header("** OpenClassrooms Data Scientist, Project 7 **")
+        st.header("Predict the solvency of the customers")
         st.markdown("This project was composed of two main objectives:")
         st.markdown("- **Develop a scoring machine learning model** to predict the solvency of clients of a bank-like company (i.e. probability of credit payment failure). It is therefore a **binary classification issue**. Class 0 is solvent client whereas class 1 represents clients with payment difficulties.")
         st.markdown("- **Build an interactive dashboard** allowing interpretations of these probabilities and improve the company's knowledge on its clients.")
@@ -106,6 +107,9 @@ if rad == '👁️ Data, at glance':
         max_row = st.slider("Select at many row you wanna visualize", value=1000, min_value=1, max_value=len(df_train)) 
         st.write(df_train.head(max_row))
         
+        st.subheader("Here's the description of the dataframe.")
+        st.write(df_train.describe())
+
         st.subheader("Heatmap with missing data.")
         st.markdown('Showing records in dark, missing values in light. Numeric values will be subsequently imputed with median for model training.')
 
