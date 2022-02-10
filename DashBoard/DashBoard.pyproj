@@ -33,9 +33,6 @@
   <ItemGroup>
     <Content Include="input\application_test.csv" />
     <Content Include="input\application_train_sample.csv" />
-    <Content Include="input\data_agg.csv" />
-    <Content Include="input\data_original.csv" />
-    <Content Include="input\data_original_le.csv" />
     <Content Include="input\data_processed.csv" />
     <Content Include="input\features_descriptions.csv" />
     <Content Include="my_functions\__pycache__\functions_cached.cpython-38.pyc" />

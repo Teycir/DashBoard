@@ -2,7 +2,7 @@
 
 
 # -*- coding: utf-8 -*-
-
+import seaborn as sns
 import joblib
 import matplotlib.pyplot as plt
 import os
@@ -43,13 +43,6 @@ FILENAME_SURROGATE_MODEL  = PATH + 'surrogate_model.pkl'
 pathabsolutedir = os.path.dirname(os.path.abspath(__file__))
 #data_processed = pickle.load(open(PATH_INPUT + "data_processed.csv", 'rb'))
 data_processed = pd.read_csv( pathabsolutedir +'/input/data_processed.csv', index_col='SK_ID_CURR')
-# original data for displaying personal data
-data_original = pd.read_csv(pathabsolutedir  +"/input/data_original.csv", index_col='SK_ID_CURR')
-# label encoded original data for interpretation with surrogate model
-data_original_le = pd.read_csv(pathabsolutedir  + "/input/data_original_le.csv", index_col='SK_ID_CURR')
-# aggregated data of the train set for comparison to current applicant
-data_agg = pd.read_csv(pathabsolutedir  +  "/input/data_agg.csv", index_col=0)
-# aggregated data of the train set for comparison to current applicant
 features_desc = pd.read_csv(pathabsolutedir  +  "/input/features_descriptions.csv", index_col=0)
 
 #######################################################################################
@@ -140,6 +133,20 @@ if rad == '👁️ Data, at glance':
 
         st.plotly_chart(heatmap(df_train, max_row)) # heatmap is a home-made func 
         # from my_functions.cached_funtions, it's important to cache functions to save loading times
+
+
+        st.subheader("Categorial data.")
+        categorical_cols = df_train.select_dtypes(include=["object"]).columns.tolist()
+        fig , axs = plt.subplots(ncols=1,nrows=12,figsize=(19,42))
+        index=0
+        axs = axs.flatten()
+        for cols in categorical_cols:
+            g = sns.countplot(x=cols,hue='TARGET',data=df_train,ax=axs[index],palette="spring")
+            index +=1
+        st.pyplot(fig)
+
+
+   
 
 #######################################################################################
 
