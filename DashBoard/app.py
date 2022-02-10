@@ -2,6 +2,9 @@
 
 
 # -*- coding: utf-8 -*-
+
+import joblib
+import matplotlib.pyplot as plt
 import os
 import numpy as np
 import pandas as pd
@@ -11,6 +14,10 @@ from lightgbm import LGBMClassifier
 import plotly.express as px
 import pickle
 from my_functions.functions_cached import * # personnal functions pkg and module
+#######################################################################################
+# No warnings
+st.set_option('deprecation.showPyplotGlobalUse', False)
+
 #######################################################################################
 # To run this code, type in terminal at the file path: 
 # streamlit run app.py
@@ -25,15 +32,32 @@ PATH_INPUT = PATH+"input/"
 FILENAME_TRAIN = PATH_INPUT+'application_train_sample.csv' # sample of train set for online version 25MB
 FILENAME_TEST = PATH_INPUT+'application_test.csv'
 FILENAME_MODEL = PATH+'optimized_model.sav'
+FILENAME_SURROGATE_MODEL  = PATH + 'surrogate_model.pkl'
 
-
+# Load the random forest/decision tree generated data
+#--------------
+# Load the data
+#--------------
+# processed data for applying the scoring model
+#pathabsolute=os.path.abspath(__file__)
+pathabsolutedir = os.path.dirname(os.path.abspath(__file__))
+#data_processed = pickle.load(open(PATH_INPUT + "data_processed.csv", 'rb'))
+data_processed = pd.read_csv( pathabsolutedir +'/input/data_processed.csv', index_col='SK_ID_CURR')
+# original data for displaying personal data
+data_original = pd.read_csv(pathabsolutedir  +"/input/data_original.csv", index_col='SK_ID_CURR')
+# label encoded original data for interpretation with surrogate model
+data_original_le = pd.read_csv(pathabsolutedir  + "/input/data_original_le.csv", index_col='SK_ID_CURR')
+# aggregated data of the train set for comparison to current applicant
+data_agg = pd.read_csv(pathabsolutedir  +  "/input/data_agg.csv", index_col=0)
+# aggregated data of the train set for comparison to current applicant
+features_desc = pd.read_csv(pathabsolutedir  +  "/input/features_descriptions.csv", index_col=0)
 
 #######################################################################################
 # Setting layout & navigation pane
 st.set_page_config(page_title="Dashboard Pret a depenser", # Must be 1st st statement
                    page_icon="☮",
                    initial_sidebar_state="expanded")
-
+surrogate_model = joblib.load(pathabsolutedir +'/input/surrogate_model.pkl')
 df_train = get_data(FILENAME_TRAIN) # load trainset data in a df
 df_test = get_data(FILENAME_TEST) # load testset (unlabeled) data in a df
 
@@ -61,7 +85,8 @@ elif rad_who == '🤵 Bank Clerk':
     sb.markdown('**Navigation**')
     rad = sb.radio('', ['🏠 Home', 
     '🔎 Client data',
-    '📉 Client prediction'])
+    '📉 Client prediction',
+    '🌐 Global features'])
 else:
     sb.markdown('**Navigation**')
     rad = sb.radio('', ['🏠 Home'])
@@ -377,6 +402,60 @@ if rad == '📉 Client prediction':
             col3.plotly_chart(histogram(df_train, x=num_plots[5], client=[df_test, input_client]), use_container_width=True)
 
 #######################################################################################
+
+if rad == '🌐 Global features':
+    st.header('GLOBAL INTERPRETATION')
+
+    # Get features importance (surrogate model, cached)
+    @st.cache
+    def get_features_importance():
+        # convert data to pd.Series
+        features_imp = pd.Series(surrogate_model.feature_importances_, index=data_original_le.columns).sort_values(ascending=False)
+
+        return features_imp
+
+
+    if st.sidebar.checkbox('Show global interpretation'):
+
+        # get the features' importance
+        features_imp = get_features_importance()
+
+        # initialization
+        sum_fi = 0
+        labels = []
+        frequencies = []
+
+        # get the labels and frequencies of 10 most important features
+        for feat_name, feat_imp in features_imp[:9].iteritems():
+            labels.append(feat_name)
+            frequencies.append(feat_imp)
+            sum_fi += feat_imp
+
+        # complete the FI of other features
+        labels.append("OTHER FEATURES…")
+        frequencies.append(1 - sum_fi)
+
+        # Set up the axe
+        _, ax = plt.subplots()
+        ax.axis("equal")
+        ax.pie(frequencies)
+        ax.set_title("Features importance")
+        ax.legend(
+            labels,
+            loc='center left',
+            bbox_to_anchor=(0.7, 0.5),
+        )
+
+        # Plot the pie-plot of features importance
+        st.pyplot()
+
+
+        if st.checkbox('Show details'):
+            st.dataframe( data =features_imp, height=500)
+
+
+
+
 if __name__ == "__main__":
     print("Script runned directly")
 else:
