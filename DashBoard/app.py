@@ -39,16 +39,14 @@ FILENAME_SURROGATE_MODEL  = PATH + 'surrogate_model.pkl'
 # Load the data
 #--------------
 # processed data for applying the scoring model
-#pathabsolute=os.path.abspath(__file__)
 pathabsolutedir = os.path.dirname(os.path.abspath(__file__))
-#data_processed = pickle.load(open(PATH_INPUT + "data_processed.csv", 'rb'))
 data_processed = pd.read_csv( pathabsolutedir +'/input/data_processed.csv', index_col='SK_ID_CURR')
 features_desc = pd.read_csv(pathabsolutedir  +  "/input/features_descriptions.csv", index_col=0)
 
 #######################################################################################
 # Setting layout & navigation pane
 st.set_page_config(page_title="Dashboard Pret a depenser", # Must be 1st st statement
-                   page_icon="☮",
+                   page_icon="$",
                    initial_sidebar_state="expanded")
 surrogate_model = joblib.load(pathabsolutedir +'/input/surrogate_model.pkl')
 df_train = get_data(FILENAME_TRAIN) # load trainset data in a df
@@ -292,15 +290,12 @@ if rad == '🔎 Client data':
             col6.plotly_chart(histogram(df_train, x=input6, legend=False, client=[df_test, input_client]),use_container_width=True)
         
         st.subheader("More information about this client.")
-        # displaying values from a dropdown (had issues with NaNs that's why .dropna())
         col1, col2 = st.columns(2)
         info = col1.selectbox('What info?', client_data.columns.sort_values())     
         info_print = client_data[info].to_numpy()[0]
 
         col1.subheader(info_print)
-        # displaying whole non NaNs row
-        col2.write("All client's data.")
-        col2.write(client_data)
+        
 
 #######################################################################################
 
