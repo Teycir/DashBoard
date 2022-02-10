@@ -405,6 +405,7 @@ if rad == '📉 Client prediction':
 
 if rad == '🌐 Global features':
     st.header('GLOBAL INTERPRETATION')
+  
 
     # Get features importance (surrogate model, cached)
     @st.cache
@@ -453,6 +454,8 @@ if rad == '🌐 Global features':
         if st.checkbox('Show details'):
             st.dataframe( data =features_imp, height=500)
 
+    if st.sidebar.checkbox('Show features descriptions'):
+        st.dataframe(data=features_desc, height=500) 
 
 
 
