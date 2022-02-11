@@ -41,12 +41,13 @@ FILENAME_SURROGATE_MODEL  = PATH + 'surrogate_model.pkl'
 # processed data for applying the scoring model
 pathabsolutedir = os.path.dirname(os.path.abspath(__file__))
 data_processed = pd.read_csv( pathabsolutedir +'/input/data_processed.csv', index_col='SK_ID_CURR')
+data_original_le = pd.read_csv( pathabsolutedir +'/input/data_original_le.csv', index_col='SK_ID_CURR')
 features_desc = pd.read_csv(pathabsolutedir  +  "/input/features_descriptions.csv", index_col=0)
 
 #######################################################################################
 # Setting layout & navigation pane
 st.set_page_config(page_title="Dashboard Pret a depenser", # Must be 1st st statement
-                   page_icon="$",
+                   page_icon="❉",
                    initial_sidebar_state="expanded")
 surrogate_model = joblib.load(pathabsolutedir +'/input/surrogate_model.pkl')
 df_train = get_data(FILENAME_TRAIN) # load trainset data in a df
@@ -54,30 +55,30 @@ df_test = get_data(FILENAME_TEST) # load testset (unlabeled) data in a df
 
 sb = st.sidebar # add a side bar 
 sb.image('https://user.oc-static.com/upload/2019/02/25/15510866018677_logo%20projet%20fintech.png', width=280)
-sb.markdown('**User type**')
-rad_who = sb.radio('', ['👨‍⚕️ Data Scientist', '🤵 Bank Clerk']) # two versions of the app
+sb.markdown('**Type utilisateur**')
+rad_who = sb.radio('', ['👨‍⚕️ Data Scientist', '🤵 Chargé de clientèle']) # two versions of the app
 # the two versions of the app will have different options, home is common to all
 if rad_who == '👨‍⚕️ Data Scientist':
     sb.markdown('**Navigation**')
     rad = sb.radio('', ['🏠 Home', 
-    '👁️ Data, at glance', 
-    '🔎 Further explore data', 
-    '💪 Model training'])
-elif rad_who == '🤵 Bank Clerk':
-    sb.markdown('**Client to scout:**')
+    '👁️ Resumé des données', 
+    '🔎 Exploration des données', 
+    '💪 Entrainement des modèles'])
+elif rad_who == '🤵 Chargé de clientèle':
+    sb.markdown('**Client à étudier:**')
     np.random.seed(13) # one major change is that client is directly asked as input since sidebar
     label_test = df_test['SK_ID_CURR'].sample(50).sort_values()
-    radio = sb.radio('', ['Random client ID', 'Type client ID'])
-    if radio == 'Random client ID': # Choice choose preselected seed13 or a known client ID
-        input_client = sb.selectbox('Select random client ID', label_test)
-    if radio == 'Type client ID':
-        input_client = int(sb.text_input('Type client ID', value=147254))
-
+    radio = sb.radio('', ['Client ID aléatoire', 'Saisir client ID'])
+    if radio == 'Client ID aléatoire': # Choice choose preselected seed13 or a known client ID
+        input_client = sb.selectbox('Selectionner client ID', label_test)
+    if radio == 'Saisir client ID':
+        input_client = int(sb.text_input('Saisir client ID', value=147254))
     sb.markdown('**Navigation**')
     rad = sb.radio('', ['🏠 Home', 
-    '🔎 Client data',
-    '📉 Client prediction',
-    '🌐 Global features'])
+    '🔎 Données client',
+    '📉 Prédiction de client',
+    '🌐 Features globales',
+    '✦ Déscription de features'])
 else:
     sb.markdown('**Navigation**')
     rad = sb.radio('', ['🏠 Home'])
@@ -101,39 +102,32 @@ if rad == '🏠 Home': # with this we choose which container to display on the s
         r.image('https://github.com/scikit-learn/scikit-learn/raw/main/doc/logos/scikit-learn-logo-notext.png', width=100)
         t.image('https://upload.wikimedia.org/wikipedia/commons/3/37/Plotly-logo-01-square.png', width=170)
 
-        st.title("Welcome to the Dashboard! \n ----")
-        st.header("Predict the solvency of the customers")
-        st.markdown("This project was composed of two main objectives:")
-        st.markdown("- **Develop a scoring machine learning model** to predict the solvency of clients of a bank-like company (i.e. probability of credit payment failure). It is therefore a **binary classification issue**. Class 0 is solvent client whereas class 1 represents clients with payment difficulties.")
-        st.markdown("- **Build an interactive dashboard** allowing interpretations of these probabilities and improve the company's knowledge on its clients.")
-        st.markdown("")
-        st.markdown("**You can choose among two options for this app:**")
-        st.markdown("- A data science-oriented version 👨‍⚕️")
-        st.markdown("- A client-oriented version 🤵")
-        st.markdown("Please choose what you want on the left pane.")
+        st.title("Bienvenu au Dashboard! \n ----")
+        st.header("Predisez la solvabilité des clients")
+
 
 #######################################################################################
 
-if rad == '👁️ Data, at glance':
+if rad == '👁️ Resumé des données':
     with dataset:
-        st.header("**The data, at glance.** \n ----") # title > header > subheader > markdown ~ text
-        st.markdown("In this project, we focus only on the application train dataset.")
+        st.header("**Données.** \n ----") # title > header > subheader > markdown ~ text
+        st.markdown("On se concentre sur le dataset d'apprentissage.")
         
-        st.subheader("Here's the dataframe.")
-        max_row = st.slider("Select at many row you wanna visualize", value=1000, min_value=1, max_value=len(df_train)) 
+        st.subheader("Le dataframe.")
+        max_row = st.slider("Selectionner le nombre de lignes à visualiser", value=1000, min_value=1, max_value=len(df_train)) 
         st.write(df_train.head(max_row))
         
-        st.subheader("Here's the description of the dataframe.")
+        st.subheader("Statistiques descriptives.")
         st.write(df_train.describe())
 
-        st.subheader("Heatmap with missing data.")
-        st.markdown('Showing records in dark, missing values in light. Numeric values will be subsequently imputed with median for model training.')
+        st.subheader("Heatmap des données manquantes.")
+        st.markdown("Valeurs manquantes en clair. Imputation avec medianes pour l'entrainement.")
 
         st.plotly_chart(heatmap(df_train, max_row)) # heatmap is a home-made func 
         # from my_functions.cached_funtions, it's important to cache functions to save loading times
 
 
-        st.subheader("Categorial data.")
+        st.subheader("Données catégorielles.")
         categorical_cols = df_train.select_dtypes(include=["object"]).columns.tolist()
         fig , axs = plt.subplots(ncols=1,nrows=12,figsize=(19,42))
         index=0
@@ -148,32 +142,32 @@ if rad == '👁️ Data, at glance':
 
 #######################################################################################
 
-if rad == '🔎 Further explore data':
+if rad == '🔎 Exploration des données':
     with eda:
-        st.header("**Overview of exploratory data analysis.** \n ----")
-        st.subheader("Plotting distributions of target and some features.")      
+        st.header("**Analyse exploratoire des données.** \n ----")
+        st.subheader("Distributions de cible et features.")      
         
         col1, col2, col3 = st.columns(3) # 3 cols with histogram = home-made func
         col1.plotly_chart(histogram(df_train, x='TARGET'), use_container_width=True)
         col2.plotly_chart(histogram(df_train, x='CODE_GENDER'), use_container_width=True)
         col3.plotly_chart(histogram(df_train, x='EXT_SOURCE_1'), use_container_width=True)
         
-        st.subheader("Let's plot some extra numerical features of your choice.")
+        st.subheader("Features numériques.")
         # letting user choose num & cat feats from dropdown
         col1, col2, col3 = st.columns(3) 
         num_col = df_train.select_dtypes(include=np.number).columns.sort_values()
-        input1 = col1.selectbox('1st plot', num_col)
-        input2 = col2.selectbox('2nd plot', num_col[1:])
-        input3 = col3.selectbox('3rd plot', num_col[2:])
+        input1 = col1.selectbox('Premier graphe', num_col)
+        input2 = col2.selectbox('Second graphe', num_col[1:])
+        input3 = col3.selectbox('Troisième graphe', num_col[2:])
 
-        st.subheader("Now, you may pick some categorical features to plot.")
+        st.subheader("Features catégorielles.")
         col4, col5, col6 = st.columns(3)
         cat_col = df_train.select_dtypes(exclude=np.number).columns.sort_values()
-        input4 = col4.selectbox('1st plot', cat_col[1:])
-        input5 = col5.selectbox('2nd plot', cat_col[2:])
-        input6 = col6.selectbox('3rd plot', cat_col[3:])
+        input4 = col4.selectbox('Premier graphe', cat_col[1:])
+        input5 = col5.selectbox('Second graphe', cat_col[2:])
+        input6 = col6.selectbox('Troisième graphe', cat_col[3:])
 
-        button = st.button('Plot it! ')
+        button = st.button('Afficher! ')
         if button:
             col1.plotly_chart(histogram(df_train, x=input1, legend=False),use_container_width=True)
             col2.plotly_chart(histogram(df_train, x=input2, legend=False),use_container_width=True)
@@ -184,13 +178,10 @@ if rad == '🔎 Further explore data':
 
 #######################################################################################
 
-if rad == '💪 Model training': 
+if rad == '💪 Entrainement des modèles': 
     with model_training:
-        st.header("**Model training.** \n ----")
-        st.markdown("We'll be using LightGBM Classifier (Microsoft),\
-            as state-of-the-art gradient boosting classifier.\
-                \n You can tune  hyperparameters, fit and observe\
-                cross-validation scores (using 3 folds).")
+        st.header("**Entrainement.** \n ----")
+        st.markdown("Utilisation de LightGBM Classifier (Microsoft).")
 
         _, col2, _ = st.columns(3)
         col2.image('https://raw.githubusercontent.com/microsoft/LightGBM/master/docs/logo/LightGBM_logo_black_text_tiny.png')     
@@ -199,19 +190,19 @@ if rad == '💪 Model training':
         y_train = df_train['TARGET']
         
         col1, col2 = st.columns(2)
-        col1.subheader("**Tuning best hyperparameters.**")
+        col1.subheader("**Tuning des meilleurs hyperparamètres.**")
         # sliders for hyperprams of LightGBM classifier
-        n_estimators = col1.slider("Number of trees", value=300, min_value=200, max_value=1000)
-        num_leaves = col1.slider("Number of leaves", value=10, min_value=5, max_value=100)
-        lr = col1.select_slider("Learning rate", options=[1e-4, 1e-3, 1e-2, 1e-1, 1e0], value=1e-1)
-        scale_pos_weight = col1.select_slider("Weight of positives (>10 highly recommanded)",\
+        n_estimators = col1.slider("Nombres d' arbres", value=300, min_value=200, max_value=1000)
+        num_leaves = col1.slider("Nombre de feuilles", value=10, min_value=5, max_value=100)
+        lr = col1.select_slider("Taux d'apprentissage", options=[1e-4, 1e-3, 1e-2, 1e-1, 1e0], value=1e-1)
+        scale_pos_weight = col1.select_slider("Poids des positives (>10 hautement reommandé)",\
             options=[1e-1, 1e0, 1e1, 2e1, 5e1, 1e2], value=1e1) # as alternative for log sliders
-        reg_alpha = col1.slider("L1 regularization term", value=0, min_value=0, max_value=100)
-        reg_lambda = col1.slider("L2 regularization term", value=0,  min_value=0, max_value=100)
-        checkbox = col1.checkbox("Export optimized model 🥒🥒🥒") # export or not model checkbox
+        reg_alpha = col1.slider("L1 terme de régularisation", value=0, min_value=0, max_value=100)
+        reg_lambda = col1.slider("L2 terme de régularisation", value=0,  min_value=0, max_value=100)
+        checkbox = col1.checkbox("Exporter modèle 🥒🥒🥒") # export or not model checkbox
 
-        if col1.button('Fit using cross-validation!'):
-            col2.subheader('**Validation set fit scores.**')
+        if col1.button('Fit en utilisant la cross-validation!'):
+            col2.subheader('**Validation.**')
             st.spinner('Fitting...') # not working...
             model = LGBMClassifier(max_depth=-1,
                                     random_state=13,
@@ -232,7 +223,7 @@ if rad == '💪 Model training':
             time, unk, auc, precision, recall, f1 = pd.DataFrame(x_val).mean(axis=0)
             d_time, d_unk, d_auc, d_precision, d_recall, d_f1 = pd.DataFrame(x_val).std(axis=0)
 
-            col2.subheader('Mean fit time (s)')
+            col2.subheader('Fit temps moyen (s)')
             col2.write(f'{time:.0f} ± {d_time:.0f}')
             col2.subheader('AUC-score')
             col2.write(f'{auc:.0%} ± {d_auc:.0%}')
@@ -246,41 +237,41 @@ if rad == '💪 Model training':
             if checkbox: # export with pickle
                 model.fit(X_train_sc, y_train)
                 pickle.dump(model, open(FILENAME_MODEL, 'wb'))
-                st.header('**Successful model export!**')
+                st.header('**Export réussi!**')
                 st.balloons()
 
 
 #######################################################################################
-if rad == '🔎 Client data': 
+if rad ==  '🔎 Données client': 
     with eda:
-        st.header("**Client's data.** \n ----")
+        st.header("**Données Client.** \n ----")
         # retrieving whole row of client from sidebar input ID
         client_data = df_test[df_test.SK_ID_CURR == input_client]
         client_data = client_data.dropna(axis=1) # avoiding bugs
 
         st.subheader(f"**Client ID: {input_client}.**")
         # plotting features from train set, with client's data as dashed line (client!=None in func)
-        st.subheader("Ranking client in some features.")      
+        st.subheader("Classement client dans certaines features.")      
         col1, col2, col3 = st.columns(3)
         col1.plotly_chart(histogram(df_train, x='CODE_GENDER', client=[df_test, input_client]), use_container_width=True)
         col2.plotly_chart(histogram(df_train, x='EXT_SOURCE_1', client=[df_test, input_client]), use_container_width=True)
         col3.plotly_chart(histogram(df_train, x='EXT_SOURCE_2', client=[df_test, input_client]), use_container_width=True)
 
-        st.subheader("Let's plot some extra ranking for numerical features.")
+        st.subheader("Features numériques.")
         col1, col2, col3 = st.columns(3)
         num_col = client_data.select_dtypes(include=np.number).columns.sort_values()
-        input1 = col1.selectbox('1st plot', num_col)
-        input2 = col2.selectbox('2nd plot', num_col[1:])
-        input3 = col3.selectbox('3rd plot', num_col[2:])
+        input1 = col1.selectbox('Premier graphe', num_col)
+        input2 = col2.selectbox('Second graphe', num_col[1:])
+        input3 = col3.selectbox('Troisième graphe', num_col[2:])
 
-        st.subheader("Now, you may pick some categorical features to plot.")
+        st.subheader("Features catégorielles.")
         col4, col5, col6 = st.columns(3)
         cat_col = client_data.select_dtypes(exclude=np.number).columns.sort_values()
-        input4 = col4.selectbox('1st plot', cat_col[1:])
-        input5 = col5.selectbox('2nd plot', cat_col[2:])
-        input6 = col6.selectbox('3rd plot', cat_col[3:])
+        input4 = col4.selectbox('Premier graphe', cat_col[1:])
+        input5 = col5.selectbox('Second graphe', cat_col[2:])
+        input6 = col6.selectbox('Troisième graphe', cat_col[3:])
 
-        button = st.button('Plot it! ')
+        button = st.button('Afficher! ')
         if button:
             col1.plotly_chart(histogram(df_train, x=input1, legend=False, client=[df_test, input_client]),use_container_width=True)
             col2.plotly_chart(histogram(df_train, x=input2, legend=False, client=[df_test, input_client]),use_container_width=True)
@@ -289,9 +280,9 @@ if rad == '🔎 Client data':
             col5.plotly_chart(histogram(df_train, x=input5, legend=False, client=[df_test, input_client]),use_container_width=True)
             col6.plotly_chart(histogram(df_train, x=input6, legend=False, client=[df_test, input_client]),use_container_width=True)
         
-        st.subheader("More information about this client.")
+        st.subheader("Plus d'information sur ce client.")
         col1, col2 = st.columns(2)
-        info = col1.selectbox('What info?', client_data.columns.sort_values())     
+        info = col1.selectbox('Quelle info?', client_data.columns.sort_values())     
         info_print = client_data[info].to_numpy()[0]
 
         col1.subheader(info_print)
@@ -299,14 +290,14 @@ if rad == '🔎 Client data':
 
 #######################################################################################
 
-if rad == '📉 Client prediction': 
+if rad ==  '📉 Prédiction de client': 
     with model_predict:
-        st.header("**Client solvency prediction.** \n ----")
+        st.header("**Prediction de la solvabilité.** \n ----")
 
         col1, col2 = st.columns(2)
-        col1.markdown(f'**Client ID: {input_client}**')
+        col1.markdown(f'** ID Client: {input_client}**')
 
-        if col2.button('Predict & plot!'):
+        if col2.button('Predire !'):
             # this time we need all outputs of preprocessing                    
             X_train_sc, X_test_sc, feat_list = preprocess(df_train, df_test)
             y_train = df_train['TARGET']
@@ -314,7 +305,7 @@ if rad == '📉 Client prediction':
             try: 
                 model = pickle.load(open(FILENAME_MODEL, 'rb'))
             except:
-                raise 'You must train the model first.'
+                raise "Il faut entrainer le modèle d'abord."
             # finding client row index in testset
             idx = df_test.SK_ID_CURR[df_test.SK_ID_CURR == input_client].index
             client = X_test_sc[idx, :] # for then slicing preprocessed test data
@@ -328,16 +319,16 @@ if rad == '📉 Client prediction':
             col1, col2 = st.columns(2)
             # adapting message wether client's pos or neg
             if y_prob[1] < y_prob[0]:
-                col1.subheader(f"**Successful payment probability.**")
+                col1.subheader(f"**Probabilité de payer.**")
             else:
-                col1.subheader(f"**Failure payment probability.**")
+                col1.subheader(f"**Probabilité de défaut de paiement.**")
             # plotting pie plot for proba, finding good h x w was a bit tough
             fig = px.pie(values=y_prob, names=[0,1], color=[0,1], color_discrete_sequence=COLOR_BR_r, 
             width=230, height=230)
             fig.update_layout(margin=dict(l=0, r=0, t=30, b=0))
             col1.plotly_chart(fig, use_container_width=True)
 
-            col2.subheader("**Client spiderchart.**")
+            col2.subheader("**Graphe client.**")
             # plotting radar chart
             columns = (imp.head(5)[0].values) # recovering top5 most important features as... tuples, why did I do that???
             df_test_sc = pd.DataFrame(X_test_sc, columns=feat_list)
@@ -360,7 +351,7 @@ if rad == '📉 Client prediction':
             fig.update_layout(margin=dict(l=50, r=50, t=50, b=10))  
             col2.plotly_chart(fig, use_container_width=True)
 
-            st.subheader("**Importance of features to decision.**")
+            st.subheader("**Importance des features à la décision.**")
             # then plotting feature importance, but for readibility slicing absissa labels using:
             labels = [(i[:7] + '...'+i[-7:]) if len(i) > 17 else i for i in imp[0]]
             fig = px.bar(   imp.head(10),
@@ -377,7 +368,7 @@ if rad == '📉 Client prediction':
                             tickmode = 'array',
                             tickvals = [i for i in range(20)],
                             ticktext = labels))
-            fig.update_yaxes(title='Relative importance')
+            fig.update_yaxes(title='Importance relative')
             fig.update_yaxes(showticklabels=False)
             fig.update_layout(margin=dict(l=20, r=20, t=10, b=10))                
             st.plotly_chart(fig, use_container_width=True)
@@ -392,7 +383,7 @@ if rad == '📉 Client prediction':
                     num_plots.append(imp.iloc[i,0])
                 i+=1
 
-            st.subheader("Ranking client in some important features.")      
+            st.subheader("Classement client sur d'importantes features.")      
             col1, col2, col3 = st.columns(3)
             col1.plotly_chart(histogram(df_train, x=num_plots[0], client=[df_test, input_client]), use_container_width=True)
             col2.plotly_chart(histogram(df_train, x=num_plots[1], client=[df_test, input_client]), use_container_width=True)
@@ -405,24 +396,17 @@ if rad == '📉 Client prediction':
 
 #######################################################################################
 
-if rad == '🌐 Global features':
-    st.header('GLOBAL INTERPRETATION')
-  
-
-    # Get features importance (surrogate model, cached)
-    @st.cache
-    def get_features_importance():
+if rad ==  '🌐 Features globales':
+        @st.cache
+        def get_features_importance():
         # convert data to pd.Series
-        features_imp = pd.Series(surrogate_model.feature_importances_, index=data_original_le.columns).sort_values(ascending=False)
+            features_imp = pd.Series(surrogate_model.feature_importances_, index=data_original_le.columns).sort_values(ascending=False)
+            return features_imp
 
-        return features_imp
-
-
-    if st.sidebar.checkbox('Show global interpretation'):
-
+        st.header('INTERPRETATION AU NIVEAU DE LA POPULATION GLOBALE')
+        # Get features importance (surrogate model, cached)
         # get the features' importance
         features_imp = get_features_importance()
-
         # initialization
         sum_fi = 0
         labels = []
@@ -435,29 +419,27 @@ if rad == '🌐 Global features':
             sum_fi += feat_imp
 
         # complete the FI of other features
-        labels.append("OTHER FEATURES…")
+        labels.append("AUTRES FEATURES…")
         frequencies.append(1 - sum_fi)
 
         # Set up the axe
         _, ax = plt.subplots()
         ax.axis("equal")
         ax.pie(frequencies)
-        ax.set_title("Features importance")
+        ax.set_title("Importance")
         ax.legend(
             labels,
             loc='center left',
             bbox_to_anchor=(0.7, 0.5),
         )
-
         # Plot the pie-plot of features importance
         st.pyplot()
+        st.dataframe( data=features_imp, height=500)
 
 
-        if st.checkbox('Show details'):
-            st.dataframe( data =features_imp, height=500)
-
-    if st.sidebar.checkbox('Show features descriptions'):
-        st.dataframe(data=features_desc, height=500) 
+if rad ==  '✦ Déscription de features':
+    st.header('DESCRIPTION DU SENS DES FEATURES')
+    st.dataframe(data=features_desc, height=500) 
 
 
 
