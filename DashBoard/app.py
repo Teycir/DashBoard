@@ -407,6 +407,7 @@ if rad ==  '🌐 Features globales':
         # Get features importance (surrogate model, cached)
         # get the features' importance
         features_imp = get_features_importance()
+
         # initialization
         sum_fi = 0
         labels = []
@@ -434,15 +435,17 @@ if rad ==  '🌐 Features globales':
         )
         # Plot the pie-plot of features importance
         st.pyplot()
-        st.dataframe( data=features_imp, height=500)
+        st.write("Top 10 des features les plus importantes avec leur score")
+        st.dataframe(data=features_imp.head(10), height=500)
 
-
+#######################################################################################
 if rad ==  '✦ Déscription de features':
-    st.header('DESCRIPTION DU SENS DES FEATURES')
-    st.dataframe(data=features_desc, height=500) 
+        st.header('DESCRIPTION DU SENS DES FEATURES')
+        st.dataframe(data=features_desc, height=500) 
 
 
 
+#######################################################################################
 if __name__ == "__main__":
     print("Script runned directly")
 else:
