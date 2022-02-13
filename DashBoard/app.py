@@ -75,7 +75,7 @@ elif rad_who == '🤵 Chargé de clientèle':
     sb.markdown('**Navigation**')
     rad = sb.radio('', ['🏠 Home', 
     '🔎 Données client',
-    '📉 Prédiction de client',
+    '📉 Prédiction de solvabilité',
     '🌐 Features globales',
     '✦ Déscription de features'])
 else:
@@ -95,11 +95,7 @@ model_predict = st.container()
 if rad == '🏠 Home': # with this we choose which container to display on the screen
     with header:
         a,z,e,r,t = st.columns(5) #OOP style 
-        a.image('https://icon-icons.com/downloadimage.php?id=168039&root=2699/PNG/512/&file=python_vertical_logo_icon_168039.png', width=60)
-        z.image('https://icon-icons.com/downloadimage.php?id=168071&root=2699/PNG/512/&file=numpy_logo_icon_168071.png', width=60)
-        e.image('https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Pandas_mark.svg/360px-Pandas_mark.svg.png', width=50)
-        r.image('https://github.com/scikit-learn/scikit-learn/raw/main/doc/logos/scikit-learn-logo-notext.png', width=100)
-        t.image('https://upload.wikimedia.org/wikipedia/commons/3/37/Plotly-logo-01-square.png', width=170)
+      
 
         st.title("Bienvenu au Dashboard! \n ----")
         st.header("Predisez la solvabilité des clients")
@@ -289,9 +285,9 @@ if rad ==  '🔎 Données client':
 
 #######################################################################################
 
-if rad ==  '📉 Prédiction de client': 
+if rad ==  '📉 Prédiction de solvabilité': 
     with model_predict:
-        st.header("**Prediction de la solvabilité.** \n ----")
+        st.header("**Prediction de la solvabilité du client.** \n ----")
 
         col1, col2 = st.columns(2)
         col1.markdown(f'** ID Client: {input_client}**')
@@ -326,6 +322,22 @@ if rad ==  '📉 Prédiction de client':
             width=230, height=230)
             fig.update_layout(margin=dict(l=0, r=0, t=30, b=0))
             col1.plotly_chart(fig, use_container_width=True)
+
+            import plotly.graph_objects as go
+
+            fig = go.Figure(go.Indicator(
+            domain = {'x': [0, 1], 'y': [0, 1]},
+            value = y_prob[0]*100,
+            mode = "gauge+number",
+            title = {'text': "Probabilité de payer du client vs seuil"},
+            gauge = {'axis': {'range': [None, 100]},
+                     'steps' : [
+                        
+                         {'range': [0, 100], 'color': "gray"}],
+                     'threshold' : {'line': {'color': "red", 'width': 4}, 'thickness': 0.75, 'value': 49}}))
+
+            
+            st.plotly_chart(fig, use_container_width=True)
 
             col2.subheader("**Graphe client.**")
             # plotting radar chart
@@ -382,6 +394,9 @@ if rad ==  '📉 Prédiction de client':
                     num_plots.append(imp.iloc[i,0])
                 i+=1
 
+
+           
+
             st.subheader("Classement client sur d'importantes features.")      
             col1, col2, col3 = st.columns(3)
             col1.plotly_chart(histogram(df_train, x=num_plots[0], client=[df_test, input_client]), use_container_width=True)
@@ -392,6 +407,9 @@ if rad ==  '📉 Prédiction de client':
             col1.plotly_chart(histogram(df_train, x=num_plots[3], client=[df_test, input_client]), use_container_width=True)
             col2.plotly_chart(histogram(df_train, x=num_plots[4], client=[df_test, input_client]), use_container_width=True)
             col3.plotly_chart(histogram(df_train, x=num_plots[5], client=[df_test, input_client]), use_container_width=True)
+
+      
+           
 
 #######################################################################################
 
