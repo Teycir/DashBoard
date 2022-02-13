@@ -40,12 +40,15 @@
     <Content Include="my_functions\__pycache__\functions_cached.cpython-38.pyc" />
     <Content Include="my_functions\__pycache__\__init__.cpython-38.pyc" />
     <Content Include="optimized_model.sav" />
+    <None Include="Properties\PublishProfiles\DashBoard20220213214011.pubxml" />
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="input\" />
     <Folder Include="my_functions\" />
     <Folder Include="my_functions\__pycache__\" />
+    <Folder Include="Properties\" />
+    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Web.targets" />
   <!-- Specify pre- and post-build commands in the BeforeBuild and 
