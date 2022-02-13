@@ -32,7 +32,6 @@ PATH_INPUT = PATH+"input/"
 FILENAME_TRAIN = PATH_INPUT+'application_train_sample.csv' # sample of train set for online version 25MB
 FILENAME_TEST = PATH_INPUT+'application_test.csv'
 FILENAME_MODEL = PATH+'optimized_model.sav'
-FILENAME_SURROGATE_MODEL  = PATH + 'surrogate_model.pkl'
 
 # Load the random forest/decision tree generated data
 #--------------
@@ -49,7 +48,7 @@ features_desc = pd.read_csv(pathabsolutedir  +  "/input/features_descriptions.cs
 st.set_page_config(page_title="Dashboard Pret a depenser", # Must be 1st st statement
                    page_icon="❉",
                    initial_sidebar_state="expanded")
-surrogate_model = joblib.load(pathabsolutedir +'/input/surrogate_model.pkl')
+surrogate_model_lgbm = joblib.load(pathabsolutedir +'/input/surrogate_model_lgbm.pkl')
 df_train = get_data(FILENAME_TRAIN) # load trainset data in a df
 df_test = get_data(FILENAME_TEST) # load testset (unlabeled) data in a df
 
@@ -400,7 +399,7 @@ if rad ==  '🌐 Features globales':
         @st.cache
         def get_features_importance():
         # convert data to pd.Series
-            features_imp = pd.Series(surrogate_model.feature_importances_, index=data_original_le.columns).sort_values(ascending=False)
+            features_imp = pd.Series(surrogate_model_lgbm.feature_importances_, index=data_original_le.columns).sort_values(ascending=False)
             return features_imp
 
         st.header('INTERPRETATION AU NIVEAU DE LA POPULATION GLOBALE')

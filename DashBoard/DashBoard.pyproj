@@ -36,11 +36,11 @@
     <Content Include="input\data_original_le.csv" />
     <Content Include="input\data_processed.csv" />
     <Content Include="input\features_descriptions.csv" />
+    <Content Include="input\surrogate_model_lgbm.pkl" />
     <Content Include="my_functions\__pycache__\functions_cached.cpython-38.pyc" />
     <Content Include="my_functions\__pycache__\__init__.cpython-38.pyc" />
     <Content Include="optimized_model.sav" />
     <Content Include="requirements.txt" />
-    <Content Include="input\surrogate_model.pkl" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="input\" />
