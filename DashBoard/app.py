@@ -334,7 +334,7 @@ if rad ==  '📉 Prédiction de solvabilité':
                      'steps' : [
                         
                          {'range': [0, 100], 'color': "gray"}],
-                     'threshold' : {'line': {'color': "red", 'width': 4}, 'thickness': 0.75, 'value': 49}}))
+                     'threshold' : {'line': {'color': "red", 'width': 4}, 'thickness': 0.75, 'value': 47}}))
 
             
             st.plotly_chart(fig, use_container_width=True)
