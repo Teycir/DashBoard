@@ -101,6 +101,10 @@ if rad == '🏠 Home': # with this we choose which container to display on the s
         st.header("Predisez la solvabilité des clients")
 
 
+        st.subheader("Lien vers la documentation.")
+        st.write("cliquez ici (https://github.com/Teycir/Openclassrooms_project7)")
+
+
 #######################################################################################
 
 if rad == '👁️ Resumé des données':
@@ -131,6 +135,10 @@ if rad == '👁️ Resumé des données':
             g = sns.countplot(x=cols,hue='TARGET',data=df_train,ax=axs[index],palette="spring")
             index +=1
         st.pyplot(fig)
+
+
+
+
 
 
    
