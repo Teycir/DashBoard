@@ -31,8 +31,8 @@ def reduce_memory_usage(df):
 
 
 @st.cache
-def get_data(finename):
-    df = pd.read_csv(finename,
+def get_data(filename):
+    df = pd.read_csv(filename,
                     sep=',',
                     low_memory=False,
                     verbose=False,
@@ -45,17 +45,7 @@ def get_data(finename):
     return df
 
 
-@st.cache(allow_output_mutation=True)
-def heatmap(df, max_row):
-    fig = px.imshow(df.head(max_row).isna(), color_continuous_scale='OrRd_r')
-    fig.update(layout_coloraxis_showscale=True)
-    fig.update_layout(coloraxis_colorbar=dict(
-    title=" ",
-    tickvals=[0,250],
-    ticktext=['Recorded','Missing'],
-))
-    fig.update_layout(margin=dict(l=10, r=10, t=10, b=10))
-    return fig
+
 
 
 @st.cache(allow_output_mutation=True)
@@ -176,13 +166,6 @@ def preprocess(df_train, df_test):
 
     return output_train, output_test, feat_list  
 
-@st.cache(suppress_st_warning=True)
-def Remove_Outlier_Indices(df):
-    Q1 = df.quantile(0.25)
-    Q3 = df.quantile(0.75)
-    IQR = Q3 - Q1
-    trueList = ~((df < (Q1 - 1.5 * IQR)) |(df > (Q3 + 1.5 * IQR)))
-    return trueList
 
 
 #######################################################################################
