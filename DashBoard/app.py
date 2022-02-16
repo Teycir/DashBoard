@@ -44,7 +44,9 @@ st.set_page_config(page_title="Dashboard Pret a depenser", # Must be 1st st stat
                    initial_sidebar_state="expanded")
 surrogate_model_lgbm = joblib.load(pathabsolutedir +'/input/surrogate_model_lgbm.pkl')
 df_train = get_data(FILENAME_TRAIN) # load trainset data in a df
+#df_train = Remove_Outlier_Indices(df_train)
 df_test = get_data(FILENAME_TEST) # load testset (unlabeled) data in a df
+#df_test = Remove_Outlier_Indices(df_test) # load testset (unlabeled) data in a df
 buttonAdmin = st.button('📄 Adminisitrateur')
 sb = st.sidebar # add a side bar 
 sb.image('https://user.oc-static.com/upload/2019/02/25/15510866018677_logo%20projet%20fintech.png', width=280)
@@ -158,8 +160,7 @@ if rad ==  '📉 Prédiction détaillée':
             else:
                 col1.subheader(f"**Probabilité de défaut de paiement.**")
             # plotting pie plot for proba, finding good h x w was a bit tough
-            fig = px.pie(values=y_prob, names=[0,1], color=[0,1], color_discrete_sequence=COLOR_BR_r, 
-            width=230, height=230)
+            fig = px.pie(values=y_prob, names=[0,1], color=[0,1], color_discrete_sequence=COLOR_BR_r, width=230, height=230)
             fig.update_layout(margin=dict(l=0, r=0, t=30, b=0))
             col1.plotly_chart(fig, use_container_width=True)
 
@@ -257,7 +258,8 @@ if rad ==  '📉 Prédiction détaillée':
 #######################################################################################
 if rad ==  '🔎 Exploration des données client': 
     with eda:
-        st.header("**Données Client.** \n ----")
+
+        st.header("**Données Client. Client sur la droite noire verticale.** \n ----")
         # retrieving whole row of client from sidebar input ID
         client_data = df_test[df_test.SK_ID_CURR == input_client]
         client_data = client_data.dropna(axis=1) # avoiding bugs
@@ -267,8 +269,12 @@ if rad ==  '🔎 Exploration des données client':
         st.subheader("Classement client dans certaines features.")      
         col1, col2, col3 = st.columns(3)
         col1.plotly_chart(histogram(df_train, x='CODE_GENDER', client=[df_test, input_client]), use_container_width=True)
-        col2.plotly_chart(histogram(df_train, x='EXT_SOURCE_1', client=[df_test, input_client]), use_container_width=True)
+        col2.plotly_chart(histogram(df_train, x='AMT_CREDIT', client=[df_test, input_client]), use_container_width=True)
         col3.plotly_chart(histogram(df_train, x='EXT_SOURCE_2', client=[df_test, input_client]), use_container_width=True)
+
+        
+       
+        
 
         st.subheader("Features numériques.")
         col1, col2, col3 = st.columns(3)
@@ -284,7 +290,7 @@ if rad ==  '🔎 Exploration des données client':
         input5 = col5.selectbox('Second graphe', cat_col[2:])
         input6 = col6.selectbox('Troisième graphe', cat_col[3:])
 
-        button = st.button('Afficher! ')
+        button = st.button('Afficher la position du client sur ces features! ')
         if button:
             col1.plotly_chart(histogram(df_train, x=input1, legend=False, client=[df_test, input_client]),use_container_width=True)
             col2.plotly_chart(histogram(df_train, x=input2, legend=False, client=[df_test, input_client]),use_container_width=True)
@@ -293,6 +299,27 @@ if rad ==  '🔎 Exploration des données client':
             col5.plotly_chart(histogram(df_train, x=input5, legend=False, client=[df_test, input_client]),use_container_width=True)
             col6.plotly_chart(histogram(df_train, x=input6, legend=False, client=[df_test, input_client]),use_container_width=True)
         
+
+
+        st.subheader("Classement client dans certaines features. Analyse bivariée.")   
+        col1, col2, col3 = st.columns(3)
+        col1.plotly_chart(customscatter(df_train, x='EXT_SOURCE_2',y='AMT_CREDIT', client=[df_test, input_client]), use_container_width=True)
+        col2.plotly_chart(customscatter(df_train, x='EXT_SOURCE_2',y='AMT_ANNUITY', client=[df_test, input_client]), use_container_width=True)
+        col3.plotly_chart(customscatter(df_train, x='CODE_GENDER',y='EXT_SOURCE_2', client=[df_test, input_client]), use_container_width=True)
+
+        st.subheader("Chosir les features pour une analyse bivariée.")
+        col1, col2 = st.columns(2)
+        num_col_biv = client_data.select_dtypes(include=np.number).columns.sort_values()
+        input1 = col1.selectbox('Première feature', num_col_biv)
+        input2 = col2.selectbox('Seconde feature', num_col_biv[1:])
+
+        button = st.button('Afficher la combinaison des deux features! ')
+        if button:
+            col1.plotly_chart(customscatter(df_train, x=input1,y=input2, client=[df_test, input_client]), use_container_width=True)
+            col2.plotly_chart(customscatter(df_train, x=input2,y=input1, client=[df_test, input_client]), use_container_width=True)
+          
+        
+
         st.subheader("Plus d'information sur ce client.")
         col1, col2 = st.columns(2)
         info = col1.selectbox('Quelle info?', client_data.columns.sort_values())     

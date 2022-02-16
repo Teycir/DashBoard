@@ -95,6 +95,29 @@ def histogram(df, x='str', legend=True, client=None):
     return fig  
 
 
+@st.cache(allow_output_mutation=True)
+def customscatter(df, x='str',y='str', legend=True, client=None): 
+    '''client = [df_test, input_client] '''
+    if x == "TARGET":
+        fig = px.scatter(df, x="DAYS_EMPLOYED", y="EXT_SOURCE_2")
+        fig.update_xaxes(showticklabels=False)
+        fig.update_layout(margin=dict(l=10, r=10, t=10, b=50))
+    else:
+        fig = px.scatter(df, x=x, y=y)
+        fig.update_layout(margin=dict(l=10, r=10, t=10, b=10))
+    if legend == True:
+        fig.update_layout(legend=dict(yanchor="top",xanchor="right"))
+    else:
+        fig.update_layout(showlegend=False)
+    if client:
+        client_data = client[0][client[0].SK_ID_CURR ==  client[1]]
+        vline = client_data[x].to_numpy()[0]
+        print(vline)
+        
+        fig.add_vline(x=vline, line_width=3, line_dash="dash", line_color="black")
+    return fig 
+
+
 @st.cache(suppress_st_warning=True)
 def preprocess(df_train, df_test):
     ''' 
@@ -149,6 +172,14 @@ def preprocess(df_train, df_test):
     feat_list = np.concatenate((num_feat, onehot_feat))
 
     return output_train, output_test, feat_list  
+
+@st.cache(suppress_st_warning=True)
+def Remove_Outlier_Indices(df):
+    Q1 = df.quantile(0.25)
+    Q3 = df.quantile(0.75)
+    IQR = Q3 - Q1
+    trueList = ~((df < (Q1 - 1.5 * IQR)) |(df > (Q3 + 1.5 * IQR)))
+    return trueList
 
 
 #######################################################################################
