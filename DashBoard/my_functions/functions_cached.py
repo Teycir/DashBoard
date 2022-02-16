@@ -99,7 +99,7 @@ def histogram(df, x='str', legend=True, client=None):
 def customscatter(df, x='str',y='str', legend=True, client=None): 
     '''client = [df_test, input_client] '''
     if x == "TARGET":
-        fig = px.scatter(df, x="DAYS_EMPLOYED", y="EXT_SOURCE_2")
+        fig = px.scatter(df, x=x, y=y)
         fig.update_xaxes(showticklabels=False)
         fig.update_layout(margin=dict(l=10, r=10, t=10, b=50))
     else:
@@ -112,9 +112,12 @@ def customscatter(df, x='str',y='str', legend=True, client=None):
     if client:
         client_data = client[0][client[0].SK_ID_CURR ==  client[1]]
         vline = client_data[x].to_numpy()[0]
+        hline = client_data[y].to_numpy()[0]
         print(vline)
+        print(hline)
         
         fig.add_vline(x=vline, line_width=3, line_dash="dash", line_color="black")
+        fig.add_hline(y=hline, line_width=3, line_dash="dash", line_color="black")
     return fig 
 
 

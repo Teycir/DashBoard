@@ -302,10 +302,10 @@ if rad ==  '🔎 Exploration des données client':
 
 
         st.subheader("Classement client dans certaines features. Analyse bivariée.")   
-        col1, col2, col3 = st.columns(3)
+        col1, col2 = st.columns(2)
         col1.plotly_chart(customscatter(df_train, x='EXT_SOURCE_2',y='AMT_CREDIT', client=[df_test, input_client]), use_container_width=True)
         col2.plotly_chart(customscatter(df_train, x='EXT_SOURCE_2',y='AMT_ANNUITY', client=[df_test, input_client]), use_container_width=True)
-        col3.plotly_chart(customscatter(df_train, x='CODE_GENDER',y='EXT_SOURCE_2', client=[df_test, input_client]), use_container_width=True)
+    
 
         st.subheader("Chosir les features pour une analyse bivariée.")
         col1, col2 = st.columns(2)
