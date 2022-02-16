@@ -45,12 +45,12 @@ st.set_page_config(page_title="Dashboard Pret a depenser", # Must be 1st st stat
 surrogate_model_lgbm = joblib.load(pathabsolutedir +'/input/surrogate_model_lgbm.pkl')
 df_train = get_data(FILENAME_TRAIN) # load trainset data in a df
 df_test = get_data(FILENAME_TEST) # load testset (unlabeled) data in a df
-
+buttonAdmin = st.button('📄 Adminisitrateur')
 sb = st.sidebar # add a side bar 
 sb.image('https://user.oc-static.com/upload/2019/02/25/15510866018677_logo%20projet%20fintech.png', width=280)
 
-buttonAdmin = st.button('📄 Adminisitrateur')
-sb.markdown('**Client à étudier:**')
+
+
 np.random.seed(13) # one major change is that client is directly asked as input since sidebar
 label_test = df_test['SK_ID_CURR'].sample(50).sort_values()
 radio = sb.radio('', ['Client ID aléatoire', 'Saisir client ID'])
@@ -63,7 +63,7 @@ rad = sb.radio('', ['🏠 Home',
     '📉 Prédiction détaillée',
     '🔎 Exploration des données client',
     '🌐 Features globales',
-    '✦ Déscription de features'])
+    '✦ Description de features'])
 
 
 #else:
@@ -345,7 +345,7 @@ if rad ==  '🌐 Features globales':
       
 
 #######################################################################################
-if rad ==  '✦ Déscription de features':
+if rad ==  '✦ Description de features':
         st.header('DESCRIPTION DU SENS DES FEATURES')
         st.dataframe(data=features_desc, height=500) 
 
