@@ -127,7 +127,7 @@ if rad == '🏠 Home': # with this we choose which container to display on the s
 
 if rad ==  '📉 Prédiction détaillée': 
     with model_predict:
-        st.header("**Prediction de la solvabilité du client.** \n ----")
+        st.header("**Prédiction de la solvabilité du client avec informations détaillées.** \n ----")
 
         col1, col2 = st.columns(2)
         col1.markdown(f'** ID Client: {input_client}**')
