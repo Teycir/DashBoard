@@ -240,14 +240,14 @@ if rad ==  '📉 Prédiction détaillée':
 
             st.subheader("Classement client sur d'importantes features.")      
             col1, col2, col3 = st.columns(3)
-            col1.plotly_chart(histogram(df_train, x=num_plots[0], client=[df_test, input_client]), use_container_width=True)
-            col2.plotly_chart(histogram(df_train, x=num_plots[1], client=[df_test, input_client]), use_container_width=True)
-            col3.plotly_chart(histogram(df_train, x=num_plots[2], client=[df_test, input_client]), use_container_width=True)
+            col1.plotly_chart(customHistogram(df_train, x=num_plots[0], client=[df_test, input_client]), use_container_width=True)
+            col2.plotly_chart(customHistogram(df_train, x=num_plots[1], client=[df_test, input_client]), use_container_width=True)
+            col3.plotly_chart(customHistogram(df_train, x=num_plots[2], client=[df_test, input_client]), use_container_width=True)
 
             col1, col2, col3 = st.columns(3)
-            col1.plotly_chart(histogram(df_train, x=num_plots[3], client=[df_test, input_client]), use_container_width=True)
-            col2.plotly_chart(histogram(df_train, x=num_plots[4], client=[df_test, input_client]), use_container_width=True)
-            col3.plotly_chart(histogram(df_train, x=num_plots[5], client=[df_test, input_client]), use_container_width=True)
+            col1.plotly_chart(customHistogram(df_train, x=num_plots[3], client=[df_test, input_client]), use_container_width=True)
+            col2.plotly_chart(customHistogram(df_train, x=num_plots[4], client=[df_test, input_client]), use_container_width=True)
+            col3.plotly_chart(customHistogram(df_train, x=num_plots[5], client=[df_test, input_client]), use_container_width=True)
 
       
            
@@ -268,9 +268,9 @@ if rad ==  '🔎 Exploration des données client':
         # plotting features from train set, with client's data as dashed line (client!=None in func)
         st.subheader("Classement client dans certaines features.")      
         col1, col2, col3 = st.columns(3)
-        col1.plotly_chart(histogram(df_train, x='CODE_GENDER', client=[df_test, input_client]), use_container_width=True)
-        col2.plotly_chart(histogram(df_train, x='AMT_CREDIT', client=[df_test, input_client]), use_container_width=True)
-        col3.plotly_chart(histogram(df_train, x='EXT_SOURCE_2', client=[df_test, input_client]), use_container_width=True)
+        col1.plotly_chart(customHistogram(df_train, x='CODE_GENDER', client=[df_test, input_client]), use_container_width=True)
+        col2.plotly_chart(customHistogram(df_train, x='AMT_CREDIT', client=[df_test, input_client]), use_container_width=True)
+        col3.plotly_chart(customHistogram(df_train, x='EXT_SOURCE_2', client=[df_test, input_client]), use_container_width=True)
 
         
        
@@ -292,19 +292,19 @@ if rad ==  '🔎 Exploration des données client':
 
         button = st.button('Afficher la position du client sur ces features! ')
         if button:
-            col1.plotly_chart(histogram(df_train, x=input1, legend=False, client=[df_test, input_client]),use_container_width=True)
-            col2.plotly_chart(histogram(df_train, x=input2, legend=False, client=[df_test, input_client]),use_container_width=True)
-            col3.plotly_chart(histogram(df_train, x=input3, legend=False, client=[df_test, input_client]),use_container_width=True)
-            col4.plotly_chart(histogram(df_train, x=input4, legend=False, client=[df_test, input_client]),use_container_width=True)
-            col5.plotly_chart(histogram(df_train, x=input5, legend=False, client=[df_test, input_client]),use_container_width=True)
-            col6.plotly_chart(histogram(df_train, x=input6, legend=False, client=[df_test, input_client]),use_container_width=True)
+            col1.plotly_chart(customHistogram(df_train, x=input1, legend=False, client=[df_test, input_client]),use_container_width=True)
+            col2.plotly_chart(customHistogram(df_train, x=input2, legend=False, client=[df_test, input_client]),use_container_width=True)
+            col3.plotly_chart(customHistogram(df_train, x=input3, legend=False, client=[df_test, input_client]),use_container_width=True)
+            col4.plotly_chart(customHistogram(df_train, x=input4, legend=False, client=[df_test, input_client]),use_container_width=True)
+            col5.plotly_chart(customHistogram(df_train, x=input5, legend=False, client=[df_test, input_client]),use_container_width=True)
+            col6.plotly_chart(customHistogram(df_train, x=input6, legend=False, client=[df_test, input_client]),use_container_width=True)
         
 
 
         st.subheader("Classement client dans certaines features. Analyse bivariée.")   
         col1, col2 = st.columns(2)
-        col1.plotly_chart(customscatter(df_train, x='EXT_SOURCE_2',y='AMT_CREDIT', client=[df_test, input_client]), use_container_width=True)
-        col2.plotly_chart(customscatter(df_train, x='EXT_SOURCE_2',y='AMT_ANNUITY', client=[df_test, input_client]), use_container_width=True)
+        col1.plotly_chart(customScatter(df_train, x='EXT_SOURCE_2',y='AMT_CREDIT', client=[df_test, input_client]), use_container_width=True)
+        col2.plotly_chart(customScatter(df_train, x='EXT_SOURCE_2',y='AMT_ANNUITY', client=[df_test, input_client]), use_container_width=True)
     
 
         st.subheader("Chosir les features pour une analyse bivariée.")
@@ -315,8 +315,8 @@ if rad ==  '🔎 Exploration des données client':
 
         button = st.button('Afficher la combinaison des deux features! ')
         if button:
-            col1.plotly_chart(customscatter(df_train, x=input1,y=input2, client=[df_test, input_client]), use_container_width=True)
-            col2.plotly_chart(customscatter(df_train, x=input2,y=input1, client=[df_test, input_client]), use_container_width=True)
+            col1.plotly_chart(customScatter(df_train, x=input1,y=input2, client=[df_test, input_client]), use_container_width=True)
+            col2.plotly_chart(customScatter(df_train, x=input2,y=input1, client=[df_test, input_client]), use_container_width=True)
           
         
 

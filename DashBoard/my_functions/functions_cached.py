@@ -49,7 +49,7 @@ def get_data(filename):
 
 
 @st.cache(allow_output_mutation=True)
-def histogram(df, x='str', legend=True, client=None): 
+def customHistogram(df, x='str', legend=True, client=None): 
     '''client = [df_test, input_client] '''
     if x == "TARGET":
         fig = px.histogram(df,
@@ -81,19 +81,19 @@ def histogram(df, x='str', legend=True, client=None):
         vline = client_data[x].to_numpy()[0]
         print(vline)
         
-        fig.add_vline(x=vline, line_width=3, line_dash="dash", line_color="black")
+        fig.add_vline(x=vline, line_width=2, line_dash="dash", line_color="black")
     return fig  
 
 
 @st.cache(allow_output_mutation=True)
-def customscatter(df, x='str',y='str', legend=True, client=None): 
+def customScatter(df, x='str',y='str', legend=True, client=None): 
     '''client = [df_test, input_client] '''
     if x == "TARGET":
-        fig = px.scatter(df, x=x, y=y)
+        fig = px.scatter(df, x=x, y=y,color=y, color_continuous_scale=px.colors.sequential.Viridis)
         fig.update_xaxes(showticklabels=False)
         fig.update_layout(margin=dict(l=10, r=10, t=10, b=50))
     else:
-        fig = px.scatter(df, x=x, y=y)
+        fig = px.scatter(df, x=x, y=y,color=y, color_continuous_scale=px.colors.sequential.Viridis)
         fig.update_layout(margin=dict(l=10, r=10, t=10, b=10))
     if legend == True:
         fig.update_layout(legend=dict(yanchor="top",xanchor="right"))
@@ -106,8 +106,9 @@ def customscatter(df, x='str',y='str', legend=True, client=None):
         print(vline)
         print(hline)
         
-        fig.add_vline(x=vline, line_width=3, line_dash="dash", line_color="black")
-        fig.add_hline(y=hline, line_width=3, line_dash="dash", line_color="black")
+        fig.add_vline(x=vline, line_width=2, line_dash="dash", line_color="black")
+        fig.add_hline(y=hline, line_width=2, line_dash="dash", line_color="black")
+       
     return fig 
 
 
