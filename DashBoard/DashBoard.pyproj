@@ -27,8 +27,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.py" />
-    <Compile Include="my_functions\functions_cached.py" />
-    <Compile Include="my_functions\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="input\application_test.csv" />
@@ -37,16 +35,12 @@
     <Content Include="input\data_processed.csv" />
     <Content Include="input\features_descriptions.csv" />
     <Content Include="input\surrogate_model_lgbm.pkl" />
-    <Content Include="my_functions\__pycache__\functions_cached.cpython-38.pyc" />
-    <Content Include="my_functions\__pycache__\__init__.cpython-38.pyc" />
     <Content Include="optimized_model.sav" />
     <None Include="Properties\PublishProfiles\DashBoard20220213214011.pubxml" />
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="input\" />
-    <Folder Include="my_functions\" />
-    <Folder Include="my_functions\__pycache__\" />
     <Folder Include="Properties\" />
     <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
