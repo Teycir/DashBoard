@@ -63,8 +63,9 @@ if radio == 'Saisir client ID':
 sb.markdown('**Navigation**')
 rad = sb.radio('', ['🏠 Home', 
     '📉 Prédiction détaillée',
-    '🔎 Exploration des données client',
     '🌐 Features globales',
+    '🔎 Exploration des données client',
+    
     '✦ Description de features'])
 
 
@@ -152,35 +153,34 @@ if rad ==  '📉 Prédiction détaillée':
             # importance of features extracted using scikit learn: pred_contrib=True
             imp_feat = model.predict_proba(X_test_sc[idx, :], pred_contrib=True).flatten()
             imp = pd.DataFrame([feat_list, imp_feat]).T.sort_values(by=1, ascending=False).head(20)
-
-            col1, col2 = st.columns(2)
-            # adapting message wether client's pos or neg
             if y_prob[1] < y_prob[0]:
-                col1.subheader(f"**Probabilité de payer.**")
+               st.header("Prêt accordé  :sunglasses:")
             else:
-                col1.subheader(f"**Probabilité de défaut de paiement.**")
-            # plotting pie plot for proba, finding good h x w was a bit tough
-            fig = px.pie(values=y_prob, names=[0,1], color=[0,1], color_discrete_sequence=COLOR_BR_r, width=230, height=230)
-            fig.update_layout(margin=dict(l=0, r=0, t=30, b=0))
-            col1.plotly_chart(fig, use_container_width=True)
-
+               st.header("Prêt accordé  :sunglasses:")
             import plotly.graph_objects as go
-
             fig = go.Figure(go.Indicator(
             domain = {'x': [0, 1], 'y': [0, 1]},
             value = y_prob[0]*100,
             mode = "gauge+number",
-            title = {'text': "Probabilité de payer du client vs seuil"},
+            #title = {'text': "Probabilité de payer du client vs seuil"},
             gauge = {'axis': {'range': [None, 100]},
                      'steps' : [
                         
                          {'range': [0, 100], 'color': "gray"}],
                      'threshold' : {'line': {'color': "red", 'width': 4}, 'thickness': 0.75, 'value': 47}}))
+      
 
-            
+            st.subheader("Probabilité de de payer vs seuil.")
+            st.plotly_chart(fig, use_container_width=True)
+            # plotting pie plot for proba, finding good h x w was a bit tough
+            fig = px.pie(values=y_prob, names=[0,1], color=[0,1], color_discrete_sequence=COLOR_BR_r, width=230, height=230)
+            fig.update_layout(margin=dict(l=0, r=0, t=30, b=0))
+            st.subheader("Probabilité de de payer vs de ne pas payer.")
             st.plotly_chart(fig, use_container_width=True)
 
-            col2.subheader("**Graphe client.**")
+          
+
+            st.subheader("**Forces vs faiblesses du client.**")
             # plotting radar chart
             columns = (imp.head(5)[0].values) # recovering top5 most important features as... tuples, why did I do that???
             df_test_sc = pd.DataFrame(X_test_sc, columns=feat_list)
@@ -201,7 +201,7 @@ if rad ==  '📉 Prédiction détaillée':
                                 )
             fig.update_traces(fill='toself')
             fig.update_layout(margin=dict(l=50, r=50, t=50, b=10))  
-            col2.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True)
 
             st.subheader("**Importance des features à la décision.**")
             # then plotting feature importance, but for readibility slicing absissa labels using:
